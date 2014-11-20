@@ -8,7 +8,6 @@ AIRPORT = "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Res
 class FoxHunter
   def initialize(conf_file, target)
     @target = target
-    
     @white_list = {
       :ssid  =>  ["SSID"],
       :bssid => []
@@ -75,7 +74,8 @@ class FoxHunter
     puts @time
     
     @foxes.each do |fox|
-      puts "SSID  : #{fox[:ssid]}\tRSSI  : #{fox[:rssi]}\tCHANNEL  : #{fox[:channel]}\tBSSID  : #{fox[:bssid]}"
+      ssid_space = 32 - fox[:ssid].size
+      puts "SSID  : #{fox[:ssid]}#{" " * ssid_space}\tRSSI  : #{fox[:rssi]}\tCHANNEL  : #{fox[:channel]}\tBSSID  : #{fox[:bssid]}"
     end
   end
 
@@ -92,7 +92,7 @@ if __FILE__ == $0
     exit(0)
   }
   
-  conf_file = "./white_list.conf"
+  conf_file = nil
   target = nil
   OptionParser.new do |parser|
     parser.on('-c [config file]', '--conf [config file]', 'Load config file') {|v| conf_file = v}
@@ -100,6 +100,11 @@ if __FILE__ == $0
     parser.parse!(ARGV)
   end
 
+  if conf_file.nil? && target.nil?
+    STDERR.puts("Load default config \"./white_list.conf\"")
+    conf_file = "./white_list.conf"
+  end
+  
   fox_hunter = FoxHunter.new(conf_file, target)
   while true
     fox_hunter.get_foxes    
