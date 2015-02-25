@@ -12,18 +12,20 @@ class FoxHunter
       :ssid  =>  ["SSID"],
       :bssid => []
     }
-    
-    open(conf_file).each do |line|
-      line.chomp!
-      line.slice!(/#.*$/)
-      line.strip!
-      
-      next if line == ""
-      
-      if check_mac(line)
-        @white_list[:bssid] << line.downcase
-      else
-        @white_list[:ssid] << line
+
+    unless conf_file.nil?
+      open(conf_file).each do |line|
+        line.chomp!
+        line.slice!(/#.*$/)
+        line.strip!
+        
+        next if line == ""
+        
+        if check_mac(line)
+          @white_list[:bssid] << line.downcase
+        else
+          @white_list[:ssid] << line
+        end
       end
     end
   end
